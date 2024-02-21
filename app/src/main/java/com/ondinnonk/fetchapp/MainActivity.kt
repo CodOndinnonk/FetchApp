@@ -55,27 +55,27 @@ fun itemsList(modifier: Modifier = Modifier, list: List<FetchItemModel>) {
 fun listItem(model: FetchItemModel) {
     Column(
         modifier = Modifier
-            .padding(all = 8.dp)
+            .padding(horizontal = 8.dp)
             .fillMaxWidth()
     ) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth(),
-            text = model.name.orEmpty(),
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center
-        )
         Row() {
+            Text(
+                modifier = Modifier.padding(start = 10.dp),
+                text = "list id = " + model.listId,
+                fontSize = 16.sp,
+            )
+            Text(
+                modifier = Modifier.weight(1f),
+                text = model.name.orEmpty(),
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center
+            )
             Text(
                 text = "id = " + model.id,
                 fontSize = 8.sp
             )
-            Text(
-                modifier = Modifier.padding(start = 10.dp),
-                text = "list id = " + model.listId,
-                fontSize = 8.sp
-            )
         }
+
     }
 }
 
