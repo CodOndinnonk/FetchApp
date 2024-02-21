@@ -42,11 +42,6 @@ class MainActivity : ComponentActivity(), KoinComponent {
             }
         }
     }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.reloadList()
-    }
 }
 
 @Composable
