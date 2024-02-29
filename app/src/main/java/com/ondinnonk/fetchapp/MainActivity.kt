@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,8 +38,21 @@ class MainActivity : ComponentActivity(), KoinComponent {
             FetchAppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    val list by viewModel.itemFlow.collectAsStateWithLifecycle()
-                    itemsList(list = list)
+                    val uiModel by viewModel.uiState.collectAsStateWithLifecycle()
+
+                    when (uiModel) {
+                        is UiModel.UiModelLoading -> {
+                            Text(text = "Loading")
+                        }
+                        is UiModel.UiModelSuccess -> {
+                            val list = (uiModel as? UiModel.UiModelSuccess)?.list ?: listOf()
+                            itemsList(onClick = { viewModel.switchNullValues() }, list = list)
+                        }
+                        is UiModel.UiModelFail -> {
+                            val error = (uiModel as? UiModel.UiModelFail)?.error ?: "Some error"
+                            Text(text = error)
+                        }
+                    }
                 }
             }
         }
@@ -45,9 +60,19 @@ class MainActivity : ComponentActivity(), KoinComponent {
 }
 
 @Composable
-fun itemsList(modifier: Modifier = Modifier, list: List<FetchItemModel>) {
-    LazyColumn(modifier = modifier) {
-        items(list) { listItem(it) }
+fun itemsList(onClick: () -> Unit, modifier: Modifier = Modifier, list: List<FetchItemModel>) {
+    Column {
+        Button(
+            modifier = Modifier
+                .height(56.dp)
+                .fillMaxWidth()
+                .padding(8.dp),
+            onClick = { onClick() }) {
+            Text(text = "Null names / Not null names")
+        }
+        LazyColumn(modifier = modifier) {
+            items(list) { listItem(it) }
+        }
     }
 }
 
@@ -84,6 +109,7 @@ fun listItem(model: FetchItemModel) {
 fun ListPreview() {
     FetchAppTheme {
         itemsList(
+            {},
             list = listOf(
                 FetchItemModel(id = 1, name = "NAME 1", listId = 2),
                 FetchItemModel(id = 2, name = "NAME 2", listId = 3),
